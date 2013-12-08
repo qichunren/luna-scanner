@@ -35,6 +35,7 @@ module LunaScanner
     def execute
       if ARGV[0].to_s == '' || ARGV[0].to_s == 'scan'
         puts "Scan LAN devices ..."
+        LunaScanner::Scanner.scan!
       elsif ARGV[0].to_s == 'web'
         puts "luna_scanner listen on 4567 port ..."
         LunaScanner::Web.run!

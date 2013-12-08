@@ -21,6 +21,7 @@ Gem::Specification.new do |spec|
   spec.bindir = 'bin'
 
   spec.add_runtime_dependency "net-ssh", "~> 2.7.0"
+  spec.add_runtime_dependency "sinatra", "~> 1.4.4"
 
   spec.add_development_dependency "bundler", "~> 1.3"
   spec.add_development_dependency "rake"

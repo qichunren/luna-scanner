@@ -6,10 +6,10 @@ module LunaScanner
 
     @@found_devices = Array.new
 
-    def initialize(thread_size, start_ip=nil, end_ip=nil)
+    def initialize(thread_size, start_ip, end_ip)
       raise "thread pool size not correct!" if thread_size.to_i <= 0
       @thread_size = thread_size.to_i
-      puts "Local ip #{self.local_ip}"
+      puts "Local ip #{LunaScanner.local_ip}"
 
       @scan_ip_range = ip_source(start_ip, end_ip)
     end
@@ -20,7 +20,7 @@ module LunaScanner
           :auth_methods => ["publickey"],
           :user_known_hosts_file => "/dev/null",
           :timeout => 3,
-          :keys => [ "#{root}/keys/yu_pri" ]  # Fix key permission: chmod g-r ./yu_pri  chmod o-r ./yu_pri
+          :keys => [ "#{root}/keys/yu_pri" ]  # Fix key permission: chmod g-wr ./yu_pri  chmod o-wr ./yu_pri  chmod u-w ./yu_pri
       ) do |session|
         block.call(session)
       end
@@ -63,10 +63,6 @@ module LunaScanner
       ip_array
     end
 
-    def local_ip
-      ip = first_public_ipv4.ip_address unless first_public_ipv4.nil?
-    end
-
     def scan
       thread_pool = []
       @thread_size.times do
@@ -78,6 +74,7 @@ module LunaScanner
               go = false
             else
               begin
+                Logger.info "Scan ip #{ip} ..."
                 start_ssh(ip) do |shell|
                   sn      = shell.exec!('cat /proc/itc_sn/sn').chomp
                   model   = shell.exec!('cat /proc/itc_sn/model').chomp
@@ -88,7 +85,7 @@ module LunaScanner
                   end
                 end
               rescue
-                #puts $!.message
+                Logger.error "                   #{ip} no response.", :time => false
               end
             end
           end
@@ -100,22 +97,21 @@ module LunaScanner
       thread_pool.each{|thread| thread.join }
     end
 
-    def self.scan!
-      scanner = self.new(100, "192.168.1.1", "192.168.1.244")
+    def self.scan!(start_ip=nil, end_ip=nil)
+      if start_ip.nil?
+        start_ip = Util.begin_ip(LunaScanner.local_ip)
+      end
+      if end_ip.nil?
+        end_ip = Util.end_ip(LunaScanner.local_ip)
+      end
+      scanner = self.new(1, start_ip, end_ip)
+
+      Logger.info "Start scan from #{start_ip} to #{end_ip} ..."
       scanner.scan
 
-      puts "#{@@found_devices.size} devices found."
+      Logger.info "#{@@found_devices.size} devices found.", :time => false
     end
 
-
-    private
-    def first_private_ipv4
-      Socket.ip_address_list.detect{|intf| intf.ipv4_private?}
-    end
-
-    def first_public_ipv4
-      Socket.ip_address_list.detect{|intf| intf.ipv4? and !intf.ipv4_loopback? and !intf.ipv4_multicast? and !intf.ipv4_private?}
-    end
 
   end
 end

@@ -15,9 +15,14 @@ module LunaScanner
         end
 
         opts.on_tail("-h", "--help", "luna_scanner usage.") do
-          puts "Help message."
-          puts "  * item 1"
-          puts "  * item 2"
+          puts "Luna Scanner usage:"
+          puts "  luna_scanner [action] [option]"
+          puts "    luna_scanner         -> Scan currnet LAN devices with default configuration"
+          puts "    luna_scanner -ts 60  -> Set scan thread size to 60"
+          puts "    luna_scanner reboot  -> Scan currnet LAN devices and reboot them"
+          puts "    luna_scanner web     -> Start luna_scanner web ui on 4567 port"
+          puts "    luna_scanner -v      -> Display luna_scanner version"
+          puts "\n"
           puts opts
           exit 1
         end
@@ -32,10 +37,15 @@ module LunaScanner
     end
 
     def execute
-      if ARGV[0].to_s == '' || ARGV[0].to_s == 'scan'
+      if ARGV[0].to_s == ''
         LunaScanner::Scanner.scan!(:thread_size => @options[:ts])
+      elsif ARGV[0].to_s == 'reboot'
+        LunaScanner::Scanner.scan!(:thread_size => @options[:ts], :reboot => true)
       elsif ARGV[0].to_s == 'web'
         LunaScanner::Web.run!
+      else
+        puts "Invalid action / options"
+        exit 1
       end
     end
 

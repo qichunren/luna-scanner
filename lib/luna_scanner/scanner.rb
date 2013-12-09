@@ -26,7 +26,7 @@ module LunaScanner
       end
     end
 
-    def scan
+    def scan(is_reboot)
       thread_pool = []
       @scan_ip_range.reverse!
       @thread_size.times do
@@ -46,6 +46,7 @@ module LunaScanner
                   if sn != "cat: /proc/itc_sn/sn: No such file or directory"
                     @@found_devices << Device.new(ip, sn, model, version)
                     Logger.success "                   #{ip} #{sn} #{model} #{version}", :time => false
+                    shell.exec!("reboot") if is_reboot
                   end
                 end
               rescue
@@ -67,8 +68,8 @@ module LunaScanner
       options[:ts] = 50 if options[:ts].nil?
       scanner = self.new(options[:ts], start_ip, end_ip)
 
-      Logger.info "Start scan from #{start_ip} to #{end_ip} ..."
-      scanner.scan
+      Logger.info "Start scan from #{start_ip} to #{end_ip} #{options[:reboot] ? '(reboot)' : ''} ..."
+      scanner.scan(options[:reboot])
 
       Logger.info "#{@@found_devices.size} devices found.", :time => false
       Logger.info "\n-----SN-------------IP----------MODEL------VERSION-----", :time => false

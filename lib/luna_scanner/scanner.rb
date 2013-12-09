@@ -65,8 +65,7 @@ module LunaScanner
     def self.scan!(options={})
       start_ip = options[:start_ip] || Util.begin_ip(LunaScanner.local_ip)
       end_ip   = options[:end_ip] || Util.end_ip(LunaScanner.local_ip)
-      options[:ts] = 50 if options[:ts].nil?
-      scanner = self.new(options[:ts], start_ip, end_ip)
+      scanner = self.new(options[:thread_size], start_ip, end_ip)
 
       Logger.info "Start scan from #{start_ip} to #{end_ip} #{options[:reboot] ? '(reboot)' : ''} ..."
       scanner.scan(options[:reboot])

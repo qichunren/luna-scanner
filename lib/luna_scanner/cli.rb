@@ -5,13 +5,28 @@ module LunaScanner
   class CLI
 
     def initialize()
-      @options = {}
+      @options = {
+          :thread_size => 50,
+          :reboot      => false,
+          :result      => nil,
+          :start_ip    => nil,
+          :end_ip      => nil
+      }
       option_parser = OptionParser.new do |opts|
         opts.banner = 'Luna Scanner toolkit.'
 
-        @options[:t] = 50
         opts.on('-t', '--thread_size COUNT', 'Set luna_scanner scan thread size.') do |thread_size|
-          @options[:t] = thread_size.to_i
+          @options[:thread_size] = thread_size.to_i
+        end
+
+        # TODO include extra ip, exclude extra ip from --ip_range option
+        opts.on('--ip_range start_ip,end_ip', 'Set luna_scanner scan ip range.') do |ip_range|
+          @options[:start_ip] = ip_range[0]
+          @options[:end_ip]   = ip_range[1]
+        end
+
+        opts.on('-r', '--result RESULT_FILE', 'Store scan result to file.') do |result_file|
+          @options[:result] = result_file
         end
 
         opts.on_tail("-h", "--help", "luna_scanner usage.") do
@@ -20,6 +35,7 @@ module LunaScanner
           puts "    luna_scanner         -> Scan currnet LAN devices with default configuration"
           puts "    luna_scanner -ts 60  -> Set scan thread size to 60"
           puts "    luna_scanner reboot  -> Scan currnet LAN devices and reboot them"
+          puts "    luna_scanner upload  -> Upload file to LAN devices"
           puts "    luna_scanner web     -> Start luna_scanner web ui on 4567 port"
           puts "    luna_scanner -v      -> Display luna_scanner version"
           puts "\n"
@@ -38,9 +54,13 @@ module LunaScanner
 
     def execute
       if ARGV[0].to_s == ''
-        LunaScanner::Scanner.scan!(:thread_size => @options[:t])
+        LunaScanner::Scanner.scan!(@options)
       elsif ARGV[0].to_s == 'reboot'
-        LunaScanner::Scanner.scan!(:thread_size => @options[:t], :reboot => true)
+        @options[:reboot] = true
+        LunaScanner::Scanner.scan!(@options)
+      elsif ARGV[0].to_s == 'upload'
+        #TODO
+
       elsif ARGV[0].to_s == 'web'
         LunaScanner::Web.run!
       else

@@ -14,9 +14,9 @@ module LunaScanner
 
       def success message, options={}
         if options[:time] == false
-          $stderr.puts "\r\e[32m#{message.to_s}\e[0m"
+          $stdout.puts "\r\e[32m#{message.to_s}\e[0m"
         else
-          $stderr.puts "\r#{Time.now.strftime("%H:%M:%S")} > \e[32m#{message.to_s}\e[0m"
+          $stdout.puts "\r#{Time.now.strftime("%H:%M:%S")} > \e[32m#{message.to_s}\e[0m"
         end
       end
 

@@ -1,11 +1,11 @@
 #encoding: utf-8
 require 'optparse'
-require "futils"
 
 module LunaScanner
   class CLI
 
     def initialize()
+      @pwd = Dir.pwd
       @options = {
           :thread_size => 50,
           :reboot      => false,
@@ -27,23 +27,23 @@ module LunaScanner
         end
 
         opts.on('-r', '--result RESULT_FILE', 'Store scan result to file.') do |result_file|
+          #TODO fixed path string, such as ~ or ./
           if result_file && result_file.start_with?("/")
             @options[:result] = result_file
           else
-            @options[:result] = result_file
+            @options[:result] = @pwd + "/" + result_file
           end
         end
 
         opts.on_tail("-h", "--help", "luna_scanner usage.") do
-          puts Dir.pwd
           puts "Luna Scanner usage:"
           puts "  luna_scanner [action] [option]"
-          puts "    luna_scanner         -> Scan currnet LAN devices with default configuration"
-          puts "    luna_scanner -ts 60  -> Set scan thread size to 60"
-          puts "    luna_scanner reboot  -> Scan currnet LAN devices and reboot them"
-          puts "    luna_scanner upload  -> Upload file to LAN devices"
-          puts "    luna_scanner web     -> Start luna_scanner web ui on 4567 port"
-          puts "    luna_scanner -v      -> Display luna_scanner version"
+          puts "    luna_scanner                     -> Scan currnet LAN devices with default configuration"
+          puts "    luna_scanner -ts 60              -> Set scan thread size to 60"
+          puts "    luna_scanner reboot              -> Scan currnet LAN devices and reboot them"
+          puts "    luna_scanner upload file1 file2  -> Upload file1 to file2 on LAN devices"
+          puts "    luna_scanner web                 -> Start luna_scanner web ui on 4567 port"
+          puts "    luna_scanner -v                  -> Display luna_scanner version"
           puts "\n"
           puts opts
           exit 1

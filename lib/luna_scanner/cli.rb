@@ -23,7 +23,8 @@ module LunaScanner
         end
 
         # TODO include extra ip, exclude extra ip from --ip_range option
-        opts.on('--ip_range START_IP,END_IP', 'Set luna_scanner scan ip range.') do |ip_range|
+        opts.on('--ip_range START_IP,END_IP', 'Set luna_scanner scan ip range.') do |ip_param|
+          ip_range = ip_param.split(",")
           @options[:start_ip] = ip_range[0]
           @options[:end_ip]   = ip_range[1]
         end

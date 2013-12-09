@@ -89,19 +89,43 @@ module LunaScanner
       require 'net/scp'
       if options[:input_ip] # Scan from given input ip file.
         source_devices = File.read(options[:input_ip])
+        upload_hosts = Array.new
         source_devices.each_line do |device|
           ip,sn,model,version = device.split(" ")
-          begin
-            Logger.info "Connect to ip #{ip} ..."
-            LunaScanner.start_ssh(ip) do |shell|
-              Logger.info "         upload file #{source_file} to #{ip} #{target_file}", :time => false
-              shell.scp.upload!(source_file, target_file)
-              block.call(shell) if block
-            end
-          rescue
-            Logger.error "             #{ip} not connected. #{$!.message}"
-          end
+          upload_hosts << ip
         end
+        upload_hosts.uniq!
+
+        return if upload_hosts.size == 0
+
+        thread_pool = []
+        @thread_size.times do
+          ssh_thread = Thread.new do
+            go = true
+            while go
+              ip = upload_hosts.pop
+              if ip.nil?
+                go = false
+              else
+                begin
+                  Logger.info "Connect to ip #{ip} ..."
+                  LunaScanner.start_ssh(ip) do |shell|
+                    Logger.info "         upload file #{source_file} to #{ip} #{target_file}", :time => false
+                    shell.scp.upload!(source_file, target_file)
+                    block.call(shell) if block
+                  end
+                rescue
+                  Logger.error "             #{ip} not connected. #{$!.message}"
+                end
+              end
+            end
+          end
+
+          thread_pool << ssh_thread
+        end
+
+        thread_pool.each{|thread| thread.join }
+
       else
         # self.scan!(options)
         puts "Not implement yet."

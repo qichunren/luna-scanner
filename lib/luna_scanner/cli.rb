@@ -13,7 +13,8 @@ module LunaScanner
           :end_ip      => nil,
           :source_file => nil,
           :target_file => nil,
-          :input_ip => nil
+          :input_ip => nil,
+          :command => ""
       }
       option_parser = OptionParser.new do |opts|
         opts.banner = 'Luna Scanner toolkit.'
@@ -65,11 +66,15 @@ module LunaScanner
           end
         end
 
+        opts.on('-c', '--command SHELL_COMMAND', 'Shell command execute on remote devices. Only be used for [upload] action') do |command_string|
+          @options[:command] = command_string
+        end
+
         opts.on_tail("-h", "--help", "luna_scanner usage.") do
           puts "Luna Scanner usage:"
           puts "  luna_scanner [action] [option]"
           puts "    luna_scanner                     -> Scan currnet LAN devices with default configuration"
-          puts "    luna_scanner -ts 60              -> Set scan thread size to 60"
+          puts "    luna_scanner -t 60               -> Set scan thread size to 60"
           puts "    luna_scanner reboot              -> Scan currnet LAN devices and reboot them"
           puts "    luna_scanner upload file1 file2  -> Upload file1 to file2 on LAN devices"
           puts "    luna_scanner web                 -> Start luna_scanner web ui on 4567 port"
@@ -110,7 +115,9 @@ module LunaScanner
           exit 3
         end
 
-        LunaScanner::Scanner.upload!(source_file, target_file, @options)
+        LunaScanner::Scanner.upload!(source_file, target_file, @options) do |shell|
+          shell.exec!(@options[:command]) if @options[:command].length > 0
+        end
       elsif ARGV[0].to_s == 'web'
         LunaScanner::Web.run!
       else

@@ -79,7 +79,7 @@ module LunaScanner
       Logger.info "\n", :time => false
     end
 
-    def self.upload!(source_file, target_file, options={})
+    def self.upload!(source_file, target_file, options={}, &block)
       require 'net/scp'
       if options[:input_ip] # Scan from given input ip file.
         source_devices = File.read(options[:input_ip])
@@ -90,6 +90,7 @@ module LunaScanner
             LunaScanner.start_ssh(ip) do |shell|
               Logger.info "         upload file #{source_file} to #{ip} #{target_file}", :time => false
               shell.scp.upload!(source_file, target_file)
+              block.call(shell) if block
             end
           rescue
             Logger.error "             #{ip} not connected. #{$!.message}"

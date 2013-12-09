@@ -14,18 +14,6 @@ module LunaScanner
       @scan_ip_range = Util.ip_range(start_ip, end_ip)
     end
 
-    def start_ssh(ip, &block)
-      Net::SSH.start(
-          "#{ip}", 'root',
-          :auth_methods => ["publickey"],
-          :user_known_hosts_file => "/dev/null",
-          :timeout => 3,
-          :keys => [ "#{LunaScanner.root}/keys/yu_pri" ]  # Fix key permission: chmod g-wr ./yu_pri  chmod o-wr ./yu_pri  chmod u-w ./yu_pri
-      ) do |session|
-        block.call(session)
-      end
-    end
-
     def scan(is_reboot)
       thread_pool = []
       @scan_ip_range.reverse!
@@ -39,7 +27,7 @@ module LunaScanner
             else
               begin
                 Logger.info "Scan ip #{ip} ..."
-                start_ssh(ip) do |shell|
+                LunaScanner.start_ssh(ip) do |shell|
                   sn      = shell.exec!('cat /proc/itc_sn/sn').chomp
                   model   = shell.exec!('cat /proc/itc_sn/model').chomp
                   version = shell.exec!('cat /jenkins_version.txt').chomp
@@ -99,7 +87,7 @@ module LunaScanner
           ip,sn,model,version = device.split(" ")
           begin
             Logger.info "Connect to ip #{ip} ..."
-            start_ssh(ip) do |shell|
+            LunaScanner.start_ssh(ip) do |shell|
               Logger.info "         upload file #{source_file} to #{ip} #{target_file}", :time => false
               shell.scp.upload!(source_file, target_file)
             end

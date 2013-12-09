@@ -76,10 +76,16 @@ module LunaScanner
         Logger.success "  #{device.sn} #{device.ip.rjust(15)} #{device.model.rjust(10)}   #{device.version.rjust(14)}", :time => false
       end
       if options[:result]
-        File.open(options[:result], "w") do |f|
-          @@found_devices.each do |device|
-            f.puts "#{device.sn} #{device.ip.rjust(15)} #{device.model.rjust(10)} #{device.version.rjust(13)}"
+        begin
+          File.open(options[:result], "w") do |f|
+            @@found_devices.each do |device|
+              f.puts "#{device.sn} #{device.ip.rjust(15)} #{device.model.rjust(10)} #{device.version.rjust(13)}"
+            end
           end
+        rescue
+          Logger.error "Failed to write scan result to #{options[:result]}", :time => false
+        else
+          Logger.error "Write scan result to #{options[:result]}", :time => false
         end
       end
       Logger.info "\n", :time => false

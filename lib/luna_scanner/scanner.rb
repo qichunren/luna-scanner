@@ -97,10 +97,14 @@ module LunaScanner
         source_devices = File.read(options[:input_ip])
         source_devices.each_line do |device|
           ip,sn,model,version = device.split(" ")
-          Logger.info "Connect to ip #{ip} ..."
-          start_ssh(ip) do |shell|
-          Logger.info "         upload file #{source_file} to #{ip} #{target_file}", :time => false
-            shell.scp.upload!(source_file, target_file)
+          begin
+            Logger.info "Connect to ip #{ip} ..."
+            start_ssh(ip) do |shell|
+              Logger.info "         upload file #{source_file} to #{ip} #{target_file}", :time => false
+              shell.scp.upload!(source_file, target_file)
+            end
+          rescue
+            Logger.error "             #{ip} not connected. #{$!.message}"
           end
         end
       else

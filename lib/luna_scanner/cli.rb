@@ -9,9 +9,9 @@ module LunaScanner
       option_parser = OptionParser.new do |opts|
         opts.banner = 'Luna Scanner toolkit.'
 
-        @options[:ts] = 50
-        opts.on('-ts', '--thread_size COUNT', 'Set luna_scanner scan thread size.') do |thread_size|
-          @options[:ts] = thread_size.to_i
+        @options[:t] = 50
+        opts.on('-t', '--thread_size COUNT', 'Set luna_scanner scan thread size.') do |thread_size|
+          @options[:t] = thread_size.to_i
         end
 
         opts.on_tail("-h", "--help", "luna_scanner usage.") do
@@ -38,9 +38,9 @@ module LunaScanner
 
     def execute
       if ARGV[0].to_s == ''
-        LunaScanner::Scanner.scan!(:thread_size => @options[:ts])
+        LunaScanner::Scanner.scan!(:thread_size => @options[:t])
       elsif ARGV[0].to_s == 'reboot'
-        LunaScanner::Scanner.scan!(:thread_size => @options[:ts], :reboot => true)
+        LunaScanner::Scanner.scan!(:thread_size => @options[:t], :reboot => true)
       elsif ARGV[0].to_s == 'web'
         LunaScanner::Web.run!
       else

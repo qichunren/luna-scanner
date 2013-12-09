@@ -64,7 +64,7 @@ module LunaScanner
       Logger.info "Start scan from #{start_ip} to #{end_ip} #{options[:reboot] ? '(reboot)' : ''} ..."
       scanner.scan(options[:reboot], options[:command])
 
-      Logger.info "\n-----IP----------SN-----------MODEL------VERSION-----", :time => false
+      Logger.info "\n------IP-----------SN---------MODEL-----VERSION------", :time => false
       @@found_devices.each do |device|
         Logger.success "#{device.ip.rjust(15)} #{device.sn} #{device.model.rjust(10)} #{device.version.rjust(14)}", :time => false
       end

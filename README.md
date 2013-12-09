@@ -29,6 +29,7 @@ Or install it yourself as:
     luna_scanner upload --source_file update_firmware.sh --target_file /usr/local/luna-client/script/update_firmware.sh -i to_be_update_devices.txt -c 'chmod a+x /usr/local/luna-client/script/update_firmware.sh'
 
     luna_scanner upload --source_file update_firmware.sh --target_file /tmp/no_use.sh -i to_be_update_devices.txt -c '/usr/local/luna-client/script/update_firmware.sh http://192.168.3.100 900k'
+    luna_scanner upload --source_file /Users/qichunren/Downloads/update_firmware.sh --target_file /usr/local/luna-client/script/update_firmware.sh -c 'chmod a+x /usr/local/luna-client/script/update_firmware.sh && /usr/local/luna-client/script/update_firmware.sh http://10.0.4.48 900k' -i 10_ip.txt
 
 ## Contributing
 

@@ -71,15 +71,15 @@ module LunaScanner
       scanner.scan(options[:reboot])
 
       Logger.info "#{@@found_devices.size} devices found. #{options[:reboot] ? '(reboot)' : ''}", :time => false
-      Logger.info "\n-----SN-------------IP----------MODEL------VERSION-----", :time => false
+      Logger.info "\n-----IP----------SN-----------MODEL------VERSION-----", :time => false
       @@found_devices.each do |device|
-        Logger.success "  #{device.sn} #{device.ip.rjust(15)} #{device.model.rjust(10)}   #{device.version.rjust(14)}", :time => false
+        Logger.success "#{device.ip.rjust(15)} #{device.sn} #{device.model.rjust(10)} #{device.version.rjust(14)}", :time => false
       end
       if options[:result]
         begin
           File.open(options[:result], "w") do |f|
             @@found_devices.each do |device|
-              f.puts "#{device.sn} #{device.ip.rjust(15)} #{device.model.rjust(10)} #{device.version.rjust(13)}"
+              f.puts "#{device.ip.rjust(15)} #{device.sn} #{device.model.rjust(10)} #{device.version.rjust(13)}"
             end
           end
         rescue
@@ -89,6 +89,25 @@ module LunaScanner
         end
       end
       Logger.info "\n", :time => false
+    end
+
+    def self.upload!(source_file, target_file, options={})
+      require 'net/scp'
+      if options[:input_ip] # Scan from given input ip file.
+        source_devices = File.read(options[:input_ip])
+        source_devices.each_line do |device|
+          ip,sn,model,version = device.split(" ")
+          Logger.info "Connect to ip #{ip} ..."
+          start_ssh(ip) do |shell|
+          Logger.info "         upload file #{source_file} to #{ip} #{target_file}", :time => false
+            shell.scp.upload!(source_file, target_file)
+          end
+        end
+      else
+        # self.scan!(options)
+        puts "Not implement yet."
+        exit 4
+      end
     end
 
 

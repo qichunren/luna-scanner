@@ -10,7 +10,10 @@ module LunaScanner
           :reboot      => false,
           :result      => nil,
           :start_ip    => nil,
-          :end_ip      => nil
+          :end_ip      => nil,
+          :source_file => nil,
+          :target_file => nil,
+          :input_ip => nil
       }
       option_parser = OptionParser.new do |opts|
         opts.banner = 'Luna Scanner toolkit.'
@@ -20,9 +23,18 @@ module LunaScanner
         end
 
         # TODO include extra ip, exclude extra ip from --ip_range option
-        opts.on('--ip_range start_ip,end_ip', 'Set luna_scanner scan ip range.') do |ip_range|
+        opts.on('--ip_range START_IP,END_IP', 'Set luna_scanner scan ip range.') do |ip_range|
           @options[:start_ip] = ip_range[0]
           @options[:end_ip]   = ip_range[1]
+        end
+
+        opts.on('-i', '--input INPUT_IP', 'Scan from given INPUT_IP file.') do |file|
+          #TODO fixed path string, such as ~ or ./
+          if file && file.start_with?("/")
+            @options[:input_ip] = file
+          else
+            @options[:input_ip] = LunaScanner.pwd + "/" + file
+          end
         end
 
         opts.on('-r', '--result RESULT_FILE', 'Store scan result to file.') do |result_file|
@@ -31,6 +43,24 @@ module LunaScanner
             @options[:result] = result_file
           else
             @options[:result] = LunaScanner.pwd + "/" + result_file
+          end
+        end
+
+        opts.on('--source_file SOURCE_FILE', 'Source file to upload to remote. Only be used for [upload] action') do |file|
+          #TODO fixed path string, such as ~ or ./
+          if file && file.start_with?("/")
+            @options[:source_file] = file
+          else
+            @options[:source_file] = LunaScanner.pwd + "/" + file
+          end
+        end
+
+        opts.on('--target_file TARGET_FILE', 'File to upload to target place. Only be used for [upload] action') do |file|
+          if file && file.start_with?("/")
+            @options[:target_file] = file
+          else
+            puts "--target_file option value must start with / absolute path"
+            exit 1
           end
         end
 
@@ -64,8 +94,22 @@ module LunaScanner
         @options[:reboot] = true
         LunaScanner::Scanner.scan!(@options)
       elsif ARGV[0].to_s == 'upload'
-        #TODO
+        source_file = @options.delete(:source_file)
+        target_file = @options.delete(:target_file)
+        if source_file.nil? || target_file.nil?
+          puts "--source_file SOURCE_FILE or --target_file TARGET_FILE options missing for upload action."
+          exit 1
+        end
+        if !File.exist?(source_file)
+          puts "Source file #{source_file} not exist."
+          exit 2
+        end
+        if @options[:input_ip] && !File.exist?(@options[:input_ip])
+          puts "Input ip file #{@options[:input_ip]} not exist."
+          exit 3
+        end
 
+        LunaScanner::Scanner.upload!(source_file, target_file, @options)
       elsif ARGV[0].to_s == 'web'
         LunaScanner::Web.run!
       else

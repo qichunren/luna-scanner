@@ -9,15 +9,15 @@ module LunaScanner
       option_parser = OptionParser.new do |opts|
         opts.banner = 'Luna Scanner toolkit.'
 
-        @options[:scan] = false
-        opts.on('-s', '--scan', 'Scan current LAN luna-client devices.') do
-          @options[:scan] = true
+        @options[:ts] = 50
+        opts.on('-ts', '--thread_size COUNT', 'Set luna_scanner scan thread size.') do |thread_size|
+          @options[:ts] = thread_size.to_i
         end
 
         opts.on_tail("-h", "--help", "luna_scanner usage.") do
           puts "Help message."
-          puts "  * ddddd"
-          puts "  * 13223223"
+          puts "  * item 1"
+          puts "  * item 2"
           puts opts
           exit 1
         end
@@ -29,12 +29,11 @@ module LunaScanner
 
       end.parse!
 
-      puts @options.inspect
     end
 
     def execute
       if ARGV[0].to_s == '' || ARGV[0].to_s == 'scan'
-        LunaScanner::Scanner.scan!
+        LunaScanner::Scanner.scan!(:thread_size => @options[:ts])
       elsif ARGV[0].to_s == 'web'
         LunaScanner::Web.run!
       end

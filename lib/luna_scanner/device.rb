@@ -2,10 +2,11 @@
 module LunaScanner
   class Device
     attr_accessor :ip, :sn, :model, :dialno, :version
-    def initialize(ip, sn, model)
-      @ip = ip
-      @sn = sn
-      @model = model
+    def initialize(ip, sn, model, version)
+      @ip      = ip || ""
+      @sn      = sn || ""
+      @model   = model || ""
+      @version = version || ""
     end
 
     def display

@@ -25,6 +25,7 @@ module LunaScanner
 end
 
 LunaScanner.autoload :Logger,   "luna_scanner/logger"
+LunaScanner.autoload :Device,   "luna_scanner/device"
 LunaScanner.autoload :Util,     "luna_scanner/util"
 LunaScanner.autoload :CLI,      "luna_scanner/cli"
 LunaScanner.autoload :Scanner,  "luna_scanner/scanner"

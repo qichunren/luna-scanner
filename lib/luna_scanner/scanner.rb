@@ -99,7 +99,7 @@ module LunaScanner
         return if upload_hosts.size == 0
 
         thread_pool = []
-        @thread_size.times do
+        options[:thread_size].times do
           ssh_thread = Thread.new do
             go = true
             while go

@@ -122,8 +122,15 @@ module LunaScanner
       elsif ARGV[0].to_s == 'web'
         LunaScanner::Web.run!
       elsif ARGV[0].to_s == 'change_ip'
-        puts "Not implement yet."
-        exit 4
+
+        if @options[:input_ip] && !File.exist?(@options[:input_ip])
+          puts "Input ip file #{@options[:input_ip]} not exist."
+          exit 3
+        end
+
+        devices = Device.load_from_file(@options[:input_ip])
+        LunaScanner::Rcommand.batch_change_ip(devices, @options)
+
       else
         puts "Invalid action / options"
         exit 1

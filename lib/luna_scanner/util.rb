@@ -42,7 +42,7 @@ module LunaScanner
         else # 192.168.1.1 ~ 192.168.3.10
           (start_ip_array[2].to_i..end_ip_array[2].to_i).step do |i|
             if start_ip_array[2].to_i == i
-              (start_ip_array[3].to_i..254).step do |j|
+              (start_ip_array[3].to_i..255).step do |j|
                 ip_array << start_ip_array[0] + "." + start_ip_array[1] + "." + start_ip_array[2] + ".#{j}"
               end
             elsif end_ip_array[2].to_i == i
@@ -50,7 +50,7 @@ module LunaScanner
                 ip_array << start_ip_array[0] + "." + start_ip_array[1] + "." + end_ip_array[2] + ".#{j}"
               end
             else
-              (1..254).step do |j|
+              (1..255).step do |j|
                 ip_array << start_ip_array[0] + "." + start_ip_array[1] + ".#{i}.#{j}"
               end
             end

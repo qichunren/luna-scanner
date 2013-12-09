@@ -75,6 +75,13 @@ module LunaScanner
       @@found_devices.each do |device|
         Logger.success "  #{device.sn} #{device.ip.rjust(15)} #{device.model.rjust(10)}   #{device.version.rjust(14)}", :time => false
       end
+      if options[:result]
+        File.open(options[:result], "w") do |f|
+          @@found_devices.each do |device|
+            f.puts "#{device.sn} #{device.ip.rjust(15)} #{device.model.rjust(10)} #{device.version.rjust(13)}"
+          end
+        end
+      end
       Logger.info "\n", :time => false
     end
 

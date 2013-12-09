@@ -1,5 +1,6 @@
 #encoding: utf-8
 require 'optparse'
+require "futils"
 
 module LunaScanner
   class CLI
@@ -26,10 +27,15 @@ module LunaScanner
         end
 
         opts.on('-r', '--result RESULT_FILE', 'Store scan result to file.') do |result_file|
-          @options[:result] = result_file
+          if result_file && result_file.start_with?("/")
+            @options[:result] = result_file
+          else
+            @options[:result] = result_file
+          end
         end
 
         opts.on_tail("-h", "--help", "luna_scanner usage.") do
+          puts Dir.pwd
           puts "Luna Scanner usage:"
           puts "  luna_scanner [action] [option]"
           puts "    luna_scanner         -> Scan currnet LAN devices with default configuration"

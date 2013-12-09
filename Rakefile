@@ -6,6 +6,7 @@ require "bundler/gem_tasks"
 # bundle package --all
 # cd vendor/cache
 # gem install --no-ri --no-rdoc  --local net-ssh-2.7.0.gem
+# gem install --no-ri --no-rdoc  --local net-scp-1.1.2.gem
 # gem install --no-ri --no-rdoc  --local rack-1.5.2.gem
 # gem install --no-ri --no-rdoc  --local rack-protection-1.5.1.gem
 # gem install --no-ri --no-rdoc  --local rake-10.1.0.gem

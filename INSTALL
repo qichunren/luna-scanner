@@ -16,3 +16,6 @@ echo "Installed dependency."
 
 cd ../..
 gem install --no-ri --no-rdoc --local luna_scanner-0.0.2.gem
+rm -f luna_scanner-0.0.2.gem
+
+echo "\n  Installed success."

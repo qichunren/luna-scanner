@@ -4,6 +4,11 @@ TODO: Write a gem description
 
 ## Installation
 
+execute:
+./INSTALL
+
+or
+
 Add this line to your application's Gemfile:
 
     gem 'luna_scanner'

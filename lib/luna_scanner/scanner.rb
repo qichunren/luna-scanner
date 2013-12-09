@@ -14,7 +14,7 @@ module LunaScanner
       @scan_ip_range = Util.ip_range(start_ip, end_ip)
     end
 
-    def scan(is_reboot)
+    def scan(is_reboot, shell_command)
       thread_pool = []
       @scan_ip_range.reverse!
       @thread_size.times do
@@ -31,6 +31,12 @@ module LunaScanner
                   sn      = shell.exec!('cat /proc/itc_sn/sn').chomp
                   model   = shell.exec!('cat /proc/itc_sn/model').chomp
                   version = shell.exec!('cat /jenkins_version.txt').chomp
+
+                  if shell_command.to_s.length > 0
+                    Logger.info "   execute command: #{shell_command} ..."
+                    shell.exec!("#{shell_command}")
+                  end
+
                   if sn != "cat: /proc/itc_sn/sn: No such file or directory"
                     @@found_devices << Device.new(ip, sn, model, version)
                     Logger.success "                   #{ip} #{sn} #{model} #{version}", :time => false
@@ -56,7 +62,7 @@ module LunaScanner
       scanner = self.new(options[:thread_size], start_ip, end_ip)
 
       Logger.info "Start scan from #{start_ip} to #{end_ip} #{options[:reboot] ? '(reboot)' : ''} ..."
-      scanner.scan(options[:reboot])
+      scanner.scan(options[:reboot], options[:command])
 
       Logger.info "\n-----IP----------SN-----------MODEL------VERSION-----", :time => false
       @@found_devices.each do |device|

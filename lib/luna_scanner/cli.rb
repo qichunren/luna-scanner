@@ -5,7 +5,6 @@ module LunaScanner
   class CLI
 
     def initialize()
-      @pwd = Dir.pwd
       @options = {
           :thread_size => 50,
           :reboot      => false,
@@ -31,7 +30,7 @@ module LunaScanner
           if result_file && result_file.start_with?("/")
             @options[:result] = result_file
           else
-            @options[:result] = @pwd + "/" + result_file
+            @options[:result] = LunaScanner.pwd + "/" + result_file
           end
         end
 

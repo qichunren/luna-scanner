@@ -7,6 +7,10 @@ module LunaScanner
       @root_path ||= File.expand_path("../", __FILE__)
     end
 
+    def pwd
+      @pwd ||= Dir.pwd
+    end
+
     def local_ip
       @local_ip ||= begin
         orig = Socket.do_not_reverse_lookup

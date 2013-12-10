@@ -77,13 +77,12 @@ module LunaScanner
         opts.on_tail("-h", "--help", "luna_scanner usage.") do
           puts "Luna Scanner usage:"
           puts "  luna_scanner [action] [option]"
-          puts "    luna_scanner                     -> Scan currnet LAN devices with default configuration"
-          puts "    luna_scanner -t 60               -> Set scan thread size to 60"
-          puts "    luna_scanner reboot              -> Scan currnet LAN devices and reboot them"
-          puts "    luna_scanner change_ip           -> Batch change LAN devices ip configuration"
-          puts "    luna_scanner upload file1 file2  -> Upload file1 to file2 on LAN devices"
-          puts "    luna_scanner web                 -> Start luna_scanner web ui on 4567 port"
-          puts "    luna_scanner -v                  -> Display luna_scanner version"
+          puts "    luna_scanner                                                 -> Scan currnet LAN devices with default configuration"
+          puts "    luna_scanner -t 60                                           -> Set scan thread size to 60"
+          puts "    luna_scanner change_ip                                       -> Batch change LAN devices ip configuration"
+          puts "    luna_scanner upload --source_file file1 --target_file file2  -> Upload file1 to file2 on LAN devices"
+          puts "    luna_scanner web                                             -> Start luna_scanner web ui on 4567 port (To be done)"
+          puts "    luna_scanner -v                                              -> Display luna_scanner version"
           puts "\n"
           puts opts
           exit 1

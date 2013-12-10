@@ -48,6 +48,10 @@ module LunaScanner
           end
         end
 
+        opts.on('--reboot', 'Reboot devices.') do
+          @options[:reboot] = true
+        end
+
         opts.on('--source_file SOURCE_FILE', 'Source file to upload to remote. Only be used for [upload] action') do |file|
           #TODO fixed path string, such as ~ or ./
           if file && file.start_with?("/")

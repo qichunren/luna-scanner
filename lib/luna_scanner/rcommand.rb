@@ -80,7 +80,7 @@ TXT
               go = false
             else
               rcommand = self.new
-              rcommand.change_ip(device, options[:is_reboot])
+              rcommand.change_ip(device, options[:reboot])
             end
           end
         end

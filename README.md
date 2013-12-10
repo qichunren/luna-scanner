@@ -65,3 +65,10 @@ Write scan result to /Users/qichunren/RubymineProjects/luna_scanner/10_ip.txt
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
 5. Create new Pull Request
+
+
+scp ~/Downloads/update_firmware.sh root@10.0.6.12:/usr/local/luna-client/script/update_firmware.sh
+scp ~/Downloads/update_firmware.sh root@10.0.7.156:/usr/local/luna-client/script/update_firmware.sh
+
+ssh root@10.0.6.12 'chmod a+x /usr/local/luna-client/script/update_firmware.sh && /usr/local/luna-client/script/update_firmware.sh http://10.0.4.48 1300k'
+ssh root@10.0.7.156 'chmod a+x /usr/local/luna-client/script/update_firmware.sh && /usr/local/luna-client/script/update_firmware.sh http://10.0.4.48 1300k'

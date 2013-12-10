@@ -33,7 +33,7 @@ module LunaScanner
                   version = shell.exec!('cat /jenkins_version.txt').chomp
 
                   if shell_command.to_s.length > 0
-                    Logger.info "   execute command: #{shell_command} ..."
+                    Logger.info "        execute command: #{shell_command} ...", :time => false
                     shell.exec!("#{shell_command}")
                   end
 
@@ -64,9 +64,9 @@ module LunaScanner
       Logger.info "Start scan from #{start_ip} to #{end_ip} #{options[:reboot] ? '(reboot)' : ''} ..."
       scanner.scan(options[:reboot], options[:command])
 
-      Logger.info "\n------IP-----------SN---------MODEL-----VERSION------", :time => false
+      Logger.info "\n#{Device.display_header}", :time => false
       @@found_devices.each do |device|
-        Logger.success "#{device.ip.rjust(15)} #{device.sn} #{device.model.rjust(10)} #{device.version.rjust(14)}", :time => false
+        Logger.success device.display, :time => false
       end
       Logger.info "\n#{@@found_devices.size} devices found. #{options[:reboot] ? '(reboot)' : ''}", :time => false
       if options[:result]

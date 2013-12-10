@@ -1,4 +1,5 @@
 require 'socket'
+require 'net/ssh'
 require "luna_scanner/version"
 
 module LunaScanner

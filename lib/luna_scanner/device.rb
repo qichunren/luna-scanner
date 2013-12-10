@@ -10,8 +10,12 @@ module LunaScanner
       @to_change_ip = to_change_ip
     end
 
+    def self.display_header
+      "-----IP--------------SN-------MODEL------VERSION------"
+    end
+
     def display
-      "#{ip} #{sn} #{model}"
+      " #{ip.ljust(15)}  #{sn}  #{model.ljust(8)}  #{version}" # two space
     end
 
     def dev?

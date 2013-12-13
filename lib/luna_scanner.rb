@@ -20,6 +20,8 @@ module LunaScanner
           s.connect '64.233.187.99', 1 #google
           s.addr.last
         end
+      rescue
+
       ensure
         Socket.do_not_reverse_lookup = orig
       end

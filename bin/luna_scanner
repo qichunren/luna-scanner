@@ -5,4 +5,3 @@ require 'luna_scanner'
 Signal.trap("INT") { exit 1 }
 
 LunaScanner::CLI.start
-

@@ -3,6 +3,9 @@ require 'net/ssh'
 require "luna_scanner/version"
 
 module LunaScanner
+
+  class SSHKeyNotFoundError < StandardError; end
+
   class << self
     def root
       @root_path ||= File.expand_path("../", __FILE__)
@@ -27,13 +30,23 @@ module LunaScanner
       end
     end
 
+    def ssh_key
+      @ssh_key ||= Dir.home.to_s + "/yu_pri"
+    end
+
+    def check_ssh_key!
+      raise SSHKeyNotFoundError.new("Please provide ssh key file: #{ssh_key}") if not File.exist?(ssh_key)
+
+      ssh_key
+    end
+
     def start_ssh(ip, &block)
       Net::SSH.start(
           "#{ip}", 'root',
           :auth_methods => ["publickey"],
           :user_known_hosts_file => "/dev/null",
           :timeout => 3,
-          :keys => [ "#{LunaScanner.root}/keys/yu_pri" ]  # Fix key permission: chmod g-wr ./yu_pri  chmod o-wr ./yu_pri  chmod u-w ./yu_pri
+          :keys => [ ssh_key ]  # Fix key permission: chmod g-wr ./yu_pri  chmod o-wr ./yu_pri  chmod u-w ./yu_pri
       ) do |session|
         block.call(session)
       end

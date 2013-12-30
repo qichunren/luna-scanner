@@ -99,11 +99,14 @@ module LunaScanner
 
     def execute
       if ARGV[0].to_s == ''
+        LunaScanner.check_ssh_key!
         LunaScanner::Scanner.scan!(@options)
       elsif ARGV[0].to_s == 'reboot'
+        LunaScanner.check_ssh_key!
         @options[:reboot] = true
         LunaScanner::Scanner.scan!(@options)
       elsif ARGV[0].to_s == 'upload'
+        LunaScanner.check_ssh_key!
         source_file = @options.delete(:source_file)
         target_file = @options.delete(:target_file)
         if source_file.nil? || target_file.nil?
@@ -125,6 +128,7 @@ module LunaScanner
       elsif ARGV[0].to_s == 'web'
         LunaScanner::Web.run!
       elsif ARGV[0].to_s == 'change_ip'
+        LunaScanner.check_ssh_key!
 
         if @options[:input_ip] && !File.exist?(@options[:input_ip])
           puts "Input ip file #{@options[:input_ip]} not exist."

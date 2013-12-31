@@ -1,4 +1,6 @@
 #encoding: utf-8
+require 'csv'
+
 module LunaScanner
   class Device
     attr_accessor :ip, :sn, :model, :dialno, :version, :to_change_ip
@@ -11,19 +13,33 @@ module LunaScanner
     end
 
     def self.display_header
-      "-----IP--------------SN-------MODEL------VERSION------"
+      "-----SN--------IP-------------MODEL------VERSION------"
     end
 
     def display
-      " #{ip.ljust(15)}  #{sn}  #{model.ljust(8)}  #{version}" # two space
+      " #{sn}  #{ip.ljust(15)}  #{model.ljust(8)}  #{version}" # two space
     end
 
     def dev?
       sn.start_with?("f")
     end
 
-    def self.load_from_file(file)
-      ip_file = File.read(file)
+    def eql?(other)
+      return false if other.is_a?(Device)
+
+      self.sn.to_s == other.sn.to_s
+    end
+
+    def self.load_from_file(file_name)
+      if file_name && file_name.to_s.end_with?(".csv")
+        devices = Array.new
+        CSV.foreach(file_name) do |row|
+          devices << Device.new(nil, row[0], nil, nil, row[1])
+        end
+        return devices
+      end
+
+      ip_file = File.read(file_name)
       devices = Array.new
 
       ip_file.each_line do |ip_line|

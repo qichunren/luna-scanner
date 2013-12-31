@@ -21,13 +21,13 @@ describe LunaScanner::Device do
     device5 = LunaScanner::Device.new("192.168.10.2", "00001234", "T-720", "20131212.121212")
     device6 = LunaScanner::Device.new("192.168.10.21", "00001234", "T-72011D", "20131212.121212")
 
-    ########################## "-----IP-------------SN-------MODEL------VERSION-------"
-    device1.display.must_equal(" 192.168.1.22     00001234  T-7202D   20131212.121212")
-    device2.display.must_equal(" 192.168.1.1      00001234  T-7202D   20131212.121212")
-    device3.display.must_equal(" 192.168.111.111  00001234  T-7202D   20131212.121212")
-    device4.display.must_equal(" 192.168.111.2    00001234  T-7202    20131212.121212")
-    device5.display.must_equal(" 192.168.10.2     00001234  T-720     20131212.121212")
-    device6.display.must_equal(" 192.168.10.21    00001234  T-72011D  20131212.121212")
+    ########################## "----SN---------IP------------MODEL------VERSION--------"
+    device1.display.must_equal(" 00001234  192.168.1.22     T-7202D   20131212.121212")
+    device2.display.must_equal(" 00001234  192.168.1.1      T-7202D   20131212.121212")
+    device3.display.must_equal(" 00001234  192.168.111.111  T-7202D   20131212.121212")
+    device4.display.must_equal(" 00001234  192.168.111.2    T-7202    20131212.121212")
+    device5.display.must_equal(" 00001234  192.168.10.2     T-720     20131212.121212")
+    device6.display.must_equal(" 00001234  192.168.10.21    T-72011D  20131212.121212")
 
   end
 

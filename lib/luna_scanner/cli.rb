@@ -6,7 +6,7 @@ module LunaScanner
 
     def initialize()
       @options = {
-          :thread_size => 50,
+          :thread_size => 120,
           :reboot      => false,
           :result      => nil,
           :start_ip    => nil,

@@ -27,6 +27,8 @@ module LunaScanner
 
       end
 
+    end
+
     def scan(is_reboot, shell_command)
       thread_pool = []
       @scan_ip_range.reverse!

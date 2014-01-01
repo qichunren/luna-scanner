@@ -148,6 +148,9 @@ module LunaScanner
       end
     end
 
+    def self.found_devices
+      @@found_devices
+    end
 
   end
 end

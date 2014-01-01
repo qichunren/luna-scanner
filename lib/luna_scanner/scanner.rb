@@ -14,6 +14,19 @@ module LunaScanner
       @scan_ip_range = Util.ip_range(start_ip, end_ip)
     end
 
+    def generate_ip_range(options)
+      if options[:input_ip].to_s.length > 0 # get ip range from file
+        raise "IP input file not exist." if !File.exist?(options[:input_ip])
+
+
+      else                                  # get ip range from start_ip to end_ip
+        if options[:start_ip].to_s.length == 0 || options[:end_ip].to_s.length == 0
+          raise "Require arguments to get ip range"
+        end
+
+
+      end
+
     def scan(is_reboot, shell_command)
       thread_pool = []
       @scan_ip_range.reverse!

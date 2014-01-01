@@ -2,6 +2,8 @@ require "sinatra/base"
 
 module LunaScanner
   class Web < Sinatra::Base
+    $scan_hosts = Array.new
+
     enable :inline_templates
 
     not_found do
@@ -25,6 +27,13 @@ module LunaScanner
       @end_ip = params[:end_ip]
 
       @ip_range = Util.ip_range(params[:start_ip], params[:end_ip])
+
+      scanner = LunaScanner::Scanner.new(100, params[:start_ip], params[:end_ip])
+
+
+      100.times do
+
+      end
       erb :index
     end
 

@@ -130,13 +130,12 @@ module LunaScanner
       elsif ARGV[0].to_s == 'change_ip'
         LunaScanner.check_ssh_key!
 
-        if @options[:input_ip] && !File.exist?(@options[:input_ip])
+        if @options[:input_ip].nil? || !File.exist?(@options[:input_ip])
           puts "Input ip file #{@options[:input_ip]} not exist."
           exit 3
         end
 
-        devices = Device.load_from_file(@options[:input_ip])
-        LunaScanner::Rcommand.batch_change_ip(devices, @options)
+        LunaScanner::Rcommand.batch_change_ip(@options)
 
       else
         puts "Invalid action / options"

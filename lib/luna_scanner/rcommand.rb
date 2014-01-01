@@ -6,6 +6,10 @@ require 'net/ssh'
 module LunaScanner
   class Rcommand # mean remote command execute.
 
+    @@ip_max_length = 7 #1.1.1.1
+    @@total_devices_count = 0
+    @@success_devices_count = 0
+
     def reboot!(ip)
       return false if ip.nil?
 
@@ -26,6 +30,11 @@ module LunaScanner
     end
 
     def change_ip(connect_device, is_reboot)
+      if connect_device.ip == ''
+        Logger.error "Device #{connect_device.sn} not found in LAN."
+        return false
+      end
+
       new_ip = connect_device.to_change_ip
       ip_template = <<TXT
 
@@ -52,35 +61,49 @@ TXT
       generated_ip = renderer.result(binding)
 
       begin
-        Net::SSH.start(
-            "#{connect_device.ip}", 'root',
-            :auth_methods => ["publickey"],
-            :user_known_hosts_file => "/dev/null",
-            :timeout => 3,
-            :keys => [ "#{LunaScanner.root}/keys/yu_pri" ]  # Fix key permission: chmod g-wr ./yu_pri  chmod o-wr ./yu_pri  chmod u-w ./yu_pri
-        ) do |session|
-          puts "Change #{connect_device.ip} (#{connect_device.sn}) to new ip #{new_ip}"
+        LunaScanner.start_ssh(connect_device.ip) do |shell|
+          Logger.info "Changed device #{connect_device.sn} [#{connect_device.ip.ljust(@@ip_max_length)}] to new ip #{new_ip.ljust(15)}"
           session.exec!("echo '#{generated_ip}' > /etc/network/interfaces")
           session.exec!("reboot") if is_reboot
         end
       rescue
-        Logger.error "              #{connect_device.ip} no response. #{$!.message}"
+        Logger.error "Failed to change device #{connect_device.sn} to new ip #{new_ip.ljust(15)} #Error reason: #{$!.message}"
+        return false
+      else
+        return true
       end
-
     end
 
-    def self.batch_change_ip(devices, options={})
+    def self.batch_change_ip(options={})
+      target_devices = Device.load_from_file(options[:input_ip])
+      @@total_devices_count = target_devices.size
+
+      LunaScanner::Scanner.scan!(options)
+      found_devices = LunaScanner::Scanner.found_devices
+
+      Logger.info "->  Start batch change ip.", :time => false
+
+      target_devices.each do |target_device|
+        scanned_device =  found_devices.detect{|device| device == target_device }
+        if scanned_device
+          target_device.ip = scanned_device.ip
+        end
+        @@ip_max_length = target_device.ip.length if @@ip_max_length < target_device.ip.length
+      end
+
       thread_pool = []
-      options[:thread_size].to_i.times do
+      10.times do
         ssh_thread = Thread.new do
           go = true
           while go
-            device = devices.pop
+            device = target_devices.pop
             if device.nil?
               go = false
             else
               rcommand = self.new
-              rcommand.change_ip(device, options[:reboot])
+              if rcommand.change_ip(device, options[:reboot])
+                @@success_devices_count += 1
+              end
             end
           end
         end
@@ -89,6 +112,9 @@ TXT
       end
 
       thread_pool.each{|thread| thread.join }
+
+      Logger.info "\n#{@@success_devices_count}/#{@@total_devices_count} devices changed.", :time => false
+      Logger.info "Restart all devices to make changes work.", :time => false if !options[:reboot]
     end
 
   end

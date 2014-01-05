@@ -72,3 +72,12 @@ scp ~/Downloads/update_firmware.sh root@10.0.7.156:/usr/local/luna-client/script
 
 ssh root@10.0.6.12 'chmod a+x /usr/local/luna-client/script/update_firmware.sh && /usr/local/luna-client/script/update_firmware.sh http://10.0.4.48 1300k'
 ssh root@10.0.7.156 'chmod a+x /usr/local/luna-client/script/update_firmware.sh && /usr/local/luna-client/script/update_firmware.sh http://10.0.4.48 1300k'
+
+
+### Work Step
+
+1. Scan
+    luna_scanner --ip_range 192.168.0.1,192.168.3.254 -t 150
+
+2. Update
+    luna_scanner update --reboot

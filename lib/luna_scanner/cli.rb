@@ -8,12 +8,12 @@ module LunaScanner
       @options = {
           :thread_size => 120,
           :reboot      => false,
-          :result      => nil,
+          :result      => "/tmp/lunascan.txt",
           :start_ip    => nil,
           :end_ip      => nil,
           :source_file => nil,
           :target_file => nil,
-          :input_ip => nil,
+          :input_ip => "/tmp/lunascan.txt",
           :command => ""
       }
       option_parser = OptionParser.new do |opts|
@@ -36,15 +36,6 @@ module LunaScanner
             @options[:input_ip] = file
           else
             @options[:input_ip] = LunaScanner.pwd + "/" + file
-          end
-        end
-
-        opts.on('-r', '--result RESULT_FILE', 'Store scan result to file.') do |result_file|
-          #TODO fixed path string, such as ~ or ./
-          if result_file && result_file.start_with?("/")
-            @options[:result] = result_file
-          else
-            @options[:result] = LunaScanner.pwd + "/" + result_file
           end
         end
 

@@ -95,6 +95,8 @@ module LunaScanner
               go = false
             else
               begin
+                next if device.version.start_with?("2013")
+
                 LunaScanner.start_ssh(device.ip) do |shell|
                   shell.scp.upload!("/Users/qichunren/code/work/luna-client/script/update_firmware.sh", "/usr/local/luna-client/script/update_firmware.sh")
                   shell.exec!("chmod a+x /usr/local/luna-client/script/update_firmware.sh")

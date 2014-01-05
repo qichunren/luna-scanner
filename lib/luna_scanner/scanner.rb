@@ -53,7 +53,7 @@ module LunaScanner
                   end
 
                   if sn != "cat: /proc/itc_sn/sn: No such file or directory"
-                    @@found_devices << Device.new(ip, sn, model, version)
+                    @@found_devices << Device.new(:ip => ip, :sn => sn, :model => model, :version => version)
                     Logger.success "                   #{ip} #{sn} #{model} #{version}", :time => false
                     shell.exec!("reboot") if is_reboot
                   end
@@ -88,7 +88,7 @@ module LunaScanner
         begin
           File.open(options[:result], "w") do |f|
             @@found_devices.each do |device|
-              f.puts "#{device.ip.rjust(15)} #{device.sn} #{device.model.rjust(10)} #{device.version.rjust(13)}"
+              f.puts "#{device.ip},#{device.sn},#{device.model},#{device.version},#{device.ip_from_sn}"
             end
           end
         rescue

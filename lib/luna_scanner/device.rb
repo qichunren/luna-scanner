@@ -6,16 +6,55 @@ module LunaScanner
     attr_accessor :ip, :sn, :model, :dialno, :version, :to_change_ip
     IP_REGEX = /^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$/
 
-    def initialize(ip, sn, model, version, to_change_ip=nil)
-      @ip      = ip || ""
-      @sn      = sn || ""
-      @model   = model || ""
-      @version = version || ""
-      @to_change_ip = to_change_ip
+    def initialize(options={})
+      # ip, sn, model, version, to_change_ip=nil
+      @ip      = options[:ip] || ""
+      @sn      = options[:sn] || ""
+      @model   = options[:model] || ""
+      @version = options[:version] || ""
+      @to_change_ip = options[:to_change_ip]
     end
 
     def self.display_header
       "-----SN--------IP-------------MODEL------VERSION------"
+    end
+
+    def ip_from_sn
+      raise "SN not valid. 8 numbers." if self.sn !~ /^\d{8}$/
+
+      sn_integer = self.sn.to_i
+      ip = "8.128.#{2+sn_integer/250}.#{sn_integer%250}"
+      ip
+    end
+
+    def new_ip
+      ip_template = <<TXT
+# and how to activate them. For more information, see interfaces(5).
+
+# The loopback network interface
+auto lo
+iface lo inet loopback
+
+#enable this if you are using 100Mbps
+auto eth0
+allow-hotplug eth0
+iface eth0 inet static
+address 0.0.0.0
+
+auto eth1
+allow-hotplug eth1
+iface eth1 inet static
+address #{ip_from_sn}
+netmask 255.255.252.0
+gateway 8.128.3.254
+TXT
+      ip_template
+    end
+
+    def write_ip_to_config
+      File.open("/tmp/interfaces", "w") do |f|
+        f.puts self.new_ip
+      end
     end
 
     def display
@@ -38,7 +77,10 @@ module LunaScanner
 
         devices = Array.new
         CSV.foreach(file_name) do |row|
-          devices << Device.new(nil, row[0], nil, nil, row[1])
+          # sn,changed_ip
+          devices << Device.new({
+                                    :ip => nil, :sn => row[0], :model => nil, :version => nil, :to_change_ip => row[1]
+                                })
         end
         return devices
       end
@@ -54,9 +96,9 @@ module LunaScanner
       end
 
       ip_file.each_line do |ip_line|
-        temp = ip_line.split(" ")
-
-        devices << Device.new(temp[0], temp[1], temp[2], temp[3], temp[4]) if temp[1] && !temp[1].start_with?("f")
+        temp = ip_line.split(",")
+        #f.puts "#{device.ip},#{device.sn},#{device.model},#{device.version},#{device.ip_from_sn}"
+        devices << Device.new(:ip => temp[0], :sn => temp[1], :model => temp[2], :version => temp[3], :to_change_ip => temp[4]) if temp[1] && !temp[1].start_with?("f")
       end
       devices
     end

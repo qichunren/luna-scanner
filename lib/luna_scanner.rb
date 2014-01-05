@@ -45,7 +45,8 @@ module LunaScanner
           "#{ip}", 'root',
           :auth_methods => ["publickey"],
           :user_known_hosts_file => "/dev/null",
-          :timeout => 3,
+          :timeout => 8,
+          :verbose => :error,
           :keys => [ ssh_key ]  # Fix key permission: chmod g-wr ./yu_pri  chmod o-wr ./yu_pri  chmod u-w ./yu_pri
       ) do |session|
         block.call(session)

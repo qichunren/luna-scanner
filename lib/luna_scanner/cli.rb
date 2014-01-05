@@ -127,6 +127,15 @@ module LunaScanner
         end
       elsif ARGV[0].to_s == 'web'
         LunaScanner::Web.run!
+      elsif ARGV[0].to_s == 'update'
+        LunaScanner.check_ssh_key!
+
+        if @options[:input_ip].nil? || !File.exist?(@options[:input_ip])
+          puts "Input ip file #{@options[:input_ip]} not exist."
+          exit 3
+        end
+
+        LunaScanner::Rcommand.batch_update(@options)
       elsif ARGV[0].to_s == 'change_ip'
         LunaScanner.check_ssh_key!
 

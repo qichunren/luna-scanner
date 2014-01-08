@@ -89,7 +89,7 @@ TXT
       devices = Array.new
 
       ip_file.each_line do |ip_line|
-        temp = ip_line.split(" ")
+        temp = ip_line.split(",")
         if temp.size < 5
           raise "ip file not valid, please check."
         end

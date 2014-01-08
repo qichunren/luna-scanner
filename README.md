@@ -78,6 +78,63 @@ ssh root@10.0.7.156 'chmod a+x /usr/local/luna-client/script/update_firmware.sh 
 
 1. Scan
     luna_scanner --ip_range 192.168.0.1,192.168.3.254 -t 150
+    luna_scanner --ip_range 8.128.2.0,8.128.3.254 -t 150 -r /tmp/lunascan8.txt
+
+    luna_scanner --ip_range 8.128.0.0,8.128.1.254 -t 150 -r /tmp/lunascan0.txt
+
 
 2. Update
-    luna_scanner update --reboot
+    luna_scanner update
+
+    luna_scanner change_ip --reboot
+
+
+
+
+./flash_remoteip.sh 192.168.2.137
+
+
+cp -r /tmp/app/ /usr/local/luna-server/
+
+
+
+root@lunaserver-r:~# df -h
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/sda1        30G   23G  5.8G  80% /
+udev            3.9G  4.0K  3.9G   1% /dev
+tmpfs           3.9G  128M  3.8G   4% /tmp
+tmpfs           1.6G  864K  1.6G   1% /run
+none            5.0M     0  5.0M   0% /run/lock
+none            3.9G  5.5M  3.9G   1% /run/shm
+/dev/sda3        80G  193M   76G   1% /record
+
+
+
+root@lunaserver-r:~# cat delete_old_files.sh
+#!/bin/bash
+
+FILESYSTEM=/dev/sdb1
+LIMIT_LOW_SPACE=30000000  # 30 G
+DELETE_DIR=/record
+
+
+freespace=`df -k $FILESYSTEM | tail -1 | awk '{print $4}'`
+
+
+echo Freespace is: $freespace
+
+
+while [ $LIMIT_LOW_SPACE -gt $freespace ]; do
+	freespace=`df -k $FILESYSTEM | tail -1 | awk '{print $4}'`
+	echo "not enough free space, pruning..."
+	cd  $DELETE_DIR
+	rm -rf `ls -t | tail -n 1`
+done
+
+echo "plenty free space, I will do nothing."
+
+
+1分区1监室
+
+
+

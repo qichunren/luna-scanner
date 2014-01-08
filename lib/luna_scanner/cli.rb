@@ -7,10 +7,10 @@ module LunaScanner
     def initialize()
       @options = {
           :thread_size => 120,
-          :reboot      => false,
-          :result      => "/tmp/lunascan.txt",
-          :start_ip    => nil,
-          :end_ip      => nil,
+          :reboot => false,
+          :result => "/tmp/lunascan.txt",
+          :start_ip => nil,
+          :end_ip => nil,
           :source_file => nil,
           :target_file => nil,
           :input_ip => "/tmp/lunascan.txt",
@@ -27,7 +27,7 @@ module LunaScanner
         opts.on('--ip_range START_IP,END_IP', 'Set luna_scanner scan ip range.') do |ip_param|
           ip_range = ip_param.split(",")
           @options[:start_ip] = ip_range[0]
-          @options[:end_ip]   = ip_range[1]
+          @options[:end_ip] = ip_range[1]
         end
 
         opts.on('-i', '--input INPUT_IP', 'Scan from given INPUT_IP file.') do |file|
@@ -36,6 +36,15 @@ module LunaScanner
             @options[:input_ip] = file
           else
             @options[:input_ip] = LunaScanner.pwd + "/" + file
+          end
+        end
+
+        opts.on('-r', '--result RESULT_FILE', 'Store scan result to file.') do |result_file|
+          #TODO fixed path string, such as ~ or ./
+          if result_file && result_file.start_with?("/")
+            @options[:result] = result_file
+          else
+            @options[:result] = LunaScanner.pwd + "/" + result_file
           end
         end
 

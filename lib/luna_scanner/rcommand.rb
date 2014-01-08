@@ -2,6 +2,7 @@
 
 require 'erb'
 require 'net/ssh'
+require 'net/scp'
 
 module LunaScanner
   class Rcommand # mean remote command execute.
@@ -37,12 +38,12 @@ module LunaScanner
 
       begin
         LunaScanner.start_ssh(connect_device.ip) do |shell|
-          Logger.info "Changed device #{connect_device.sn} [#{connect_device.ip.ljust(@@ip_max_length)}] to new ip #{new_ip.ljust(15)}"
+          Logger.info "Changed device #{connect_device.sn} [#{connect_device.ip.ljust(@@ip_max_length)}] to new ip #{connect_device.to_change_ip.ljust(15)}"
           shell.exec!("echo '#{connect_device.new_ip}' > /etc/network/interfaces")
           shell.exec!("reboot") if is_reboot
         end
       rescue
-        Logger.error "Failed to change device #{connect_device.sn} to new ip #{new_ip.ljust(15)} #Error reason: #{$!.message}"
+        Logger.error "Failed to change device #{connect_device.sn} to new ip #{connect_device.new_ip.ljust(15)} #Error reason: #{$!.message}"
         return false
       else
         return true
@@ -81,7 +82,7 @@ module LunaScanner
       Logger.info "Restart all devices to make changes work.", :time => false if !options[:reboot]
     end
 
-    def batch_update(options={})
+    def self.batch_update(options={})
       target_devices = Device.load_from_file(options[:input_ip])
       Logger.info "->  Start batch update.", :time => false
 
@@ -95,20 +96,20 @@ module LunaScanner
               go = false
             else
               begin
-                next if device.version.start_with?("2013")
-
-                LunaScanner.start_ssh(device.ip) do |shell|
-                  shell.scp.upload!("/Users/qichunren/code/work/luna-client/script/update_firmware.sh", "/usr/local/luna-client/script/update_firmware.sh")
-                  shell.exec!("chmod a+x /usr/local/luna-client/script/update_firmware.sh")
-                  shell.exec!("sed -i 's/iface eth0 inet dhcp/iface eth0 inet static\naddress 0.0.0.0/' /etc/network/interfaces")
-                  shell.exec!("/usr/local/luna-client/script/update_firmware.sh http://192.168.3.233 1000k")
-                  shell.exec!("reboot") if options[:reboot]
+                if device.version.start_with?("2013")
+                  Logger.info "->  Update #{device.ip} #{device.sn}"
+                  LunaScanner.start_ssh(device.ip) do |shell|
+                    shell.scp.upload!("/Users/qichunren/code/work/luna-client/script/update_firmware.sh", "/usr/local/luna-client/script/update_firmware.sh")
+                    shell.exec!("chmod a+x /usr/local/luna-client/script/update_firmware.sh")
+                    shell.exec!("sed -i 's/iface eth0 inet dhcp/iface eth0 inet static\naddress 0.0.0.0/' /etc/network/interfaces")
+                    shell.exec!("/usr/local/luna-client/script/update_firmware.sh http://8.128.3.254 1500k")
+                  end
                 end
               rescue
-                Logger.error "Failed to update device #{device.sn} #{device.ip}"
-                return false
+                Logger.error "Failed to update device #{device.sn} #{device.ip}  #{$!.message}"
+               # return false
               else
-                return true
+               # return true
               end
             end
           end

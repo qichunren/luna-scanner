@@ -83,6 +83,7 @@ module LunaScanner
     end
 
     def self.batch_update(options={})
+      update_script_file = File.expand_path("../update_firmware.sh", __FILE__)
       target_devices = Device.load_from_file(options[:input_ip])
       Logger.info "->  Start batch update.", :time => false
 
@@ -96,15 +97,15 @@ module LunaScanner
               go = false
             else
               begin
-                if device.version.start_with?("2013")
+
                   Logger.info "->  Update #{device.ip} #{device.sn}"
                   LunaScanner.start_ssh(device.ip) do |shell|
-                    shell.scp.upload!("/Users/qichunren/code/work/luna-client/script/update_firmware.sh", "/usr/local/luna-client/script/update_firmware.sh")
+                    shell.scp.upload!("#{update_script_file}", "/usr/local/luna-client/script/update_firmware.sh")
                     shell.exec!("chmod a+x /usr/local/luna-client/script/update_firmware.sh")
                     shell.exec!("sed -i 's/iface eth0 inet dhcp/iface eth0 inet static\naddress 0.0.0.0/' /etc/network/interfaces")
                     shell.exec!("/usr/local/luna-client/script/update_firmware.sh http://8.128.3.254 1500k")
                   end
-                end
+
               rescue
                 Logger.error "Failed to update device #{device.sn} #{device.ip}  #{$!.message}"
                # return false

@@ -83,8 +83,10 @@ ssh root@10.0.7.156 'chmod a+x /usr/local/luna-client/script/update_firmware.sh 
     luna_scanner --ip_range 8.128.0.0,8.128.1.254 -t 150 -r /tmp/lunascan0.txt
 
 
+    cat /tmp/lunascan8.txt  | grep U > /tmp/lunascan.txt
+
 2. Update
-    luna_scanner update
+    luna_scanner update  # /tmp/lunascan.txt
 
     luna_scanner change_ip --reboot
 

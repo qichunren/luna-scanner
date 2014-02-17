@@ -98,13 +98,14 @@ module LunaScanner
             else
               begin
 
-                  Logger.info "->  Update #{device.ip} #{device.sn}"
-                  LunaScanner.start_ssh(device.ip) do |shell|
-                    shell.scp.upload!("#{update_script_file}", "/usr/local/luna-client/script/update_firmware.sh")
-                    shell.exec!("chmod a+x /usr/local/luna-client/script/update_firmware.sh")
-                    shell.exec!("sed -i 's/iface eth0 inet dhcp/iface eth0 inet static\naddress 0.0.0.0/' /etc/network/interfaces")
-                    shell.exec!("/usr/local/luna-client/script/update_firmware.sh http://8.128.3.254 1500k")
-                  end
+                    Logger.info "->  Update #{device.ip} #{device.sn}"
+                    LunaScanner.start_ssh(device.ip) do |shell|
+                      shell.scp.upload!("#{update_script_file}", "/usr/local/luna-client/script/update_firmware.sh")
+                      shell.exec!("chmod a+x /usr/local/luna-client/script/update_firmware.sh")
+                      shell.exec!("sed -i 's/iface eth0 inet dhcp/iface eth0 inet static\naddress 0.0.0.0/' /etc/network/interfaces")
+                      shell.exec!("/usr/local/luna-client/script/update_firmware.sh http://8.128.3.254 1500k")
+                    end
+
 
               rescue
                 Logger.error "Failed to update device #{device.sn} #{device.ip}  #{$!.message}"

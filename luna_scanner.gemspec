@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.email         = ["whyruby@gmail.com"]
   spec.description   = %q{Discover luna-client devices in LAN}
   spec.summary       = %q{Discover luna-clinet devices in LAN, batch config them.}
-  spec.homepage      = "https://git.g77k.com"
+  spec.homepage      = "https://github.com/qichunren/luna-scanner"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files`.split($/)

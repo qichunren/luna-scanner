@@ -1,36 +1,43 @@
 # LunaScanner
 
-TODO: Write a gem description
+LunaScanner是一个局域网中设备扫描的命令行工具。它可以批量局域网中设备，批量执行远程命令。
 
-## Installation
+## 使用场景
 
-execute:
-./INSTALL
+ 我们在做的一套系统中包括服务器和许多客户端机器，它们都是Linux机器。这些客户端机器的系统（固件）都是统一刷机部署的。日常管理客户端机器是通
+ 过SSH加上一个private key登录进入终端，执行相应的SHELL命令来完成操作的。在平时开发和测试的过程中，经常需要统一地批量修改当前网络中客户端
+ 系统中的某一个文件或者重启等各种操作，于是我就创建了这个工具。
 
-or
+## 安装
 
-Add this line to your application's Gemfile:
+```
+$ gem install luna_scanner
+```
 
-    gem 'luna_scanner'
+## 使用方法
 
-And then execute:
+`luna_scanner`
+直接输入这个命令是扫描当前网段中的客户端Linux机器，如当前机器的IP是192.168.1.23，那么扫描的网段是192.168.1.1到192.168.1.255
 
-    $ bundle
+参数:
 
-Or install it yourself as:
+--ip_range 是用于设置扫描的网段，如--ip_range=192.168.0.1,192.168.4.255
+   
+-t  是用于设置扫描的并发线程数，如-t 180，这个数值默认是120，建议不要设置得过高
+   
+-r  是用于设置扫描结果的文件，默认是/tmp/lunascan.txt
 
-    $ gem install luna_scanner
+luna_scanner reboot
 
-## Usage
+luna_scanner --ip_range=192.168.0.1,192.168.4.255 -r 192_ip.txt
 
-    luna_scanner
-    luna_scanner reboot
-    luna_scanner --ip_range=192.168.0.1,192.168.4.255 -r 192_ip.txt
-    luna_scanner change_ip -i 10_ip.txt
-    luna_scanner upload --source_file update_firmware.sh --target_file /usr/local/luna-client/script/update_firmware.sh -i to_be_update_devices.txt -c 'chmod a+x /usr/local/luna-client/script/update_firmware.sh'
+luna_scanner change_ip -i 10_ip.txt
 
-    luna_scanner upload --source_file update_firmware.sh --target_file /tmp/no_use.sh -i to_be_update_devices.txt -c '/usr/local/luna-client/script/update_firmware.sh http://192.168.3.100 900k'
-    luna_scanner upload --source_file /Users/qichunren/Downloads/update_firmware.sh --target_file /usr/local/luna-client/script/update_firmware.sh -c 'chmod a+x /usr/local/luna-client/script/update_firmware.sh && /usr/local/luna-client/script/update_firmware.sh http://10.0.4.48 900k' -i 10_ip.txt
+luna_scanner upload --source_file update_firmware.sh --target_file /usr/local/luna-client/script/update_firmware.sh -i to_be_update_devices.txt -c 'chmod a+x /usr/local/luna-client/script/update_firmware.sh'
+
+luna_scanner upload --source_file update_firmware.sh --target_file /tmp/no_use.sh -i to_be_update_devices.txt -c '/usr/local/luna-client/script/update_firmware.sh http://192.168.3.100 900k'
+
+luna_scanner upload --source_file /Users/qichunren/Downloads/update_firmware.sh --target_file /usr/local/luna-client/script/update_firmware.sh -c 'chmod a+x /usr/local/luna-client/script/update_firmware.sh && /usr/local/luna-client/script/update_firmware.sh http://10.0.4.48 900k' -i 10_ip.txt
 
 ###　批量更新终端设备
 
@@ -70,9 +77,6 @@ Write scan result to /Users/qichunren/RubymineProjects/luna_scanner/10_ip.txt
 scp ~/Downloads/update_firmware.sh root@10.0.6.12:/usr/local/luna-client/script/update_firmware.sh
 scp ~/Downloads/update_firmware.sh root@10.0.7.156:/usr/local/luna-client/script/update_firmware.sh
 
-ssh root@10.0.6.12 'chmod a+x /usr/local/luna-client/script/update_firmware.sh && /usr/local/luna-client/script/update_firmware.sh http://10.0.4.48 1300k'
-ssh root@10.0.7.156 'chmod a+x /usr/local/luna-client/script/update_firmware.sh && /usr/local/luna-client/script/update_firmware.sh http://10.0.4.48 1300k'
-
 
 ### Work Step
 
@@ -90,54 +94,6 @@ ssh root@10.0.7.156 'chmod a+x /usr/local/luna-client/script/update_firmware.sh 
     luna_scanner update  # /tmp/lunascan.txt
 
     luna_scanner change_ip --reboot
-
-
-
-
-./flash_remoteip.sh 192.168.2.137
-
-
-cp -r /tmp/app/ /usr/local/luna-server/
-
-
-
-root@lunaserver-r:~# df -h
-Filesystem      Size  Used Avail Use% Mounted on
-/dev/sda1        30G   23G  5.8G  80% /
-udev            3.9G  4.0K  3.9G   1% /dev
-tmpfs           3.9G  128M  3.8G   4% /tmp
-tmpfs           1.6G  864K  1.6G   1% /run
-none            5.0M     0  5.0M   0% /run/lock
-none            3.9G  5.5M  3.9G   1% /run/shm
-/dev/sda3        80G  193M   76G   1% /record
-
-
-
-root@lunaserver-r:~# cat delete_old_files.sh
-#!/bin/bash
-
-FILESYSTEM=/dev/sdb1
-LIMIT_LOW_SPACE=30000000  # 30 G
-DELETE_DIR=/record
-
-
-freespace=`df -k $FILESYSTEM | tail -1 | awk '{print $4}'`
-
-
-echo Freespace is: $freespace
-
-
-while [ $LIMIT_LOW_SPACE -gt $freespace ]; do
-	freespace=`df -k $FILESYSTEM | tail -1 | awk '{print $4}'`
-	echo "not enough free space, pruning..."
-	cd  $DELETE_DIR
-	rm -rf `ls -t | tail -n 1`
-done
-
-echo "plenty free space, I will do nothing."
-
-
-1分区1监室
 
 
 

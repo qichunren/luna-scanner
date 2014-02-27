@@ -31,7 +31,7 @@ module LunaScanner
     end
 
     def ssh_key
-      @ssh_key ||= Dir.home.to_s + "/yu_pri"
+      @ssh_key ||= Dir.home.to_s + "/yu_pri" # Dir.home method is in Ruby 1.8
     end
 
     def check_ssh_key!

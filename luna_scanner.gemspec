@@ -20,6 +20,8 @@ Gem::Specification.new do |spec|
 
   spec.bindir = 'bin'
 
+  spec.required_ruby_version = ">= 1.9.1"
+
   spec.add_runtime_dependency "net-ssh", "~> 2.7.0"
   spec.add_runtime_dependency "net-scp", "~> 1.1.2"
   spec.add_runtime_dependency "sinatra", "~> 1.4.4"

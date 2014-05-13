@@ -43,7 +43,7 @@ describe LunaScanner::Device do
   end
 
   it "should generate ip file" do
-    device1 = LunaScanner::Device.new(:ip => "192.168.1.22", "00000034", "T-7202D", :version => "20131212.121212")
+    device1 = LunaScanner::Device.new(:ip => "192.168.1.22", :sn => "00000034", :model => "T-7202D", :version => "20131212.121212")
     device1.new_ip.must_equal("# and how to activate them. For more information, see interfaces(5).
 
 # The loopback network interface

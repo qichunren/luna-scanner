@@ -8,3 +8,6 @@ v0.0.2
 
 v0.0.3
     Add [luna_scanner reboot] action.
+
+v0.0.4
+    Fixed ip_from_sn method, the 4th ip field now will not equal to 0 when sn equal to times of 250, for example: 00000250, 00000500

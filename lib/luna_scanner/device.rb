@@ -23,7 +23,15 @@ module LunaScanner
       raise "SN not valid. 8 numbers." if self.sn !~ /^\d{8}$/
 
       sn_integer = self.sn.to_i
-      ip = "8.128.#{2+sn_integer/250}.#{sn_integer%250}"
+      if sn_integer % 250 == 0
+        ip_3th_field = sn_integer/250 - 1
+        ip_4th_field = 250
+      else
+        ip_3th_field = sn_integer/250
+        ip_4th_field = sn_integer % 250
+      end
+
+      ip = "8.128.#{2+ip_3th_field}.#{ip_4th_field}"
       ip
     end
 
